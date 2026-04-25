@@ -47,10 +47,14 @@ export const getAvgAqi = (
     stations: WaqiStation[],
     sampledPoints: LngLat[]
 ): number | null => {
-
     const uniqueStations = Object.values(
         Object.fromEntries(stations.map(s => [s.uid, s]))
-    );
+    ).filter(s => {
+        const val = Number(s.aqi);
+        return s.aqi !== "-" && s.aqi !== "" && !isNaN(val);
+    });
+
+    if (uniqueStations.length === 0) return null;
 
     const aqiValues: number[] = [];
 
@@ -73,7 +77,7 @@ export const getAvgAqi = (
             }
         });
 
-        if (nearestAqi !== null && nearestDist <= MAX_RADIUS_KM) {
+        if (nearestAqi !== null && !isNaN(nearestAqi) && nearestDist <= MAX_RADIUS_KM) {
             aqiValues.push(nearestAqi);
         }
     });

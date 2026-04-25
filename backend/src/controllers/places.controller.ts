@@ -9,6 +9,7 @@ import logger from "../config/logger.ts";
 import { enrichRoutesWithAqi } from "../services/aqi.service.ts";
 
 const CACHE_TTL = 7 * 24 * 60 * 60;
+const AQI_CACHE_TTL = 15 * 60;
 
 export const createPlacesController = (mapService: IMapService) => {
     const placesSearchApi = asyncErrorHandler(async (req: Request, res: Response) => {
@@ -214,26 +215,41 @@ export const createPlacesController = (mapService: IMapService) => {
 
         const { src, dest } = parseQuery.data;
 
-        // Coordinates in TomTom services are [lng, lat]
+        // TomTom Coordinates are [lng, lat]
         const srcCoord: [number, number] = [src[1], src[0]];
         const destCoord: [number, number] = [dest[1], dest[0]];
 
-        const cacheKey = `route:${srcCoord.join(",")}-${destCoord.join(",")}`;
-        const cachedData = await redis.get(cacheKey);
+        const formatCoord = (c: number) => c.toFixed(6);
+        const coordsKey = `${formatCoord(srcCoord[0])},${formatCoord(srcCoord[1])}-${formatCoord(destCoord[0])},${formatCoord(destCoord[1])}`;
 
-        if (cachedData) {
-            logger.info(`${cacheKey} Cache hit`);
-            const data = JSON.parse(cachedData);
-            const enrich = await enrichRoutesWithAqi(data);
-            return res.status(200).json(new ApiSuccessRes(200, "Success", enrich));
+        const cacheKeyEnriched = `route:enriched:${coordsKey}`;
+        const cacheKeyRaw = `route:raw:${coordsKey}`;
+
+        const cachedEnriched = await redis.get(cacheKeyEnriched);
+        if (cachedEnriched) {
+            logger.info(`${cacheKeyEnriched} Cache hit aqi enriched route data`);
+            return res.status(200).json(new ApiSuccessRes(200, "Success", JSON.parse(cachedEnriched)));
         }
 
-        const routeData = await mapService.getPossibleRoutes({ src: srcCoord, dest: destCoord });
+        const cachedRaw = await redis.get(cacheKeyRaw);
+        let rawData: any;
 
-        await redis.setex(cacheKey, CACHE_TTL, JSON.stringify(routeData));
-        logger.info(`${cacheKey} Cache miss`);
+        if (cachedRaw) {
+            logger.info(`${cacheKeyRaw} Cache hit raw route data`);
+            rawData = JSON.parse(cachedRaw);
+        } else {
+            logger.info(`${cacheKeyRaw} Cache miss raw route data`);
+            rawData = await mapService.getPossibleRoutes({ src: srcCoord, dest: destCoord });
+            await redis.setex(cacheKeyRaw, CACHE_TTL, JSON.stringify(rawData));
+        }
 
-        return res.status(200).json(new ApiSuccessRes(200, "Success", routeData));
+        const enrichedRoutes = await enrichRoutesWithAqi(rawData);
+
+
+        await redis.setex(cacheKeyEnriched, AQI_CACHE_TTL, JSON.stringify(enrichedRoutes));
+        logger.info(`${cacheKeyEnriched} Cache miss aqi enriched route data`);
+
+        return res.status(200).json(new ApiSuccessRes(200, "Success", enrichedRoutes));
     });
 
     return {
