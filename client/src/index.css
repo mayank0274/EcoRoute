@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Oxygenated Canvas: Typography Import */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Typography Scale */
+  --font-sans: 'Manrope', sans-serif;
+  --font-heading: 'Manrope', sans-serif;
+  
+  --font-size-display-lg: 3.5rem;
+  --font-size-display-md: 2.75rem;
+  --font-size-headline-sm: 1.5rem;
+  --font-size-title-sm: 1rem;
+  --font-size-label-md: 0.875rem;
+  --font-size-label-sm: 0.75rem;
+
+  /* Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-container: var(--primary-container);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Surface Hierarchy */
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+
+  /* Radii */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Shadow */
+  --shadow-ambient: 0 12px 32px rgba(24, 29, 26, 0.06);
+}
+
+:root {
+  /* Base Colors: The Oxygenated Palette */
+  --background: #f6fbf5; /* surface */
+  --foreground: #181d1a; /* on-surface */
+  
+  --primary: #006d42;
+  --primary-foreground: #ffffff;
+  --primary-container: #5cc68c;
+  
+  --secondary: #506353;
+  --secondary-foreground: #ffffff;
+  
+  --muted: #f0f5ef; /* surface-container-low */
+  --muted-foreground: #506353;
+  
+  --accent: #7d5700; /* tertiary (Earth Gold) */
+  --accent-foreground: #ffffff;
+
+  --destructive: #ba1a1a;
+  --destructive-foreground: #ffffff;
+
+  --border: rgba(187, 203, 188, 0.15); /* Ghost Border Fallback */
+  --input: #f0f5ef;
+  --ring: rgba(0, 109, 66, 0.3);
+
+  /* Surface Hierarchy & Tonal Layering */
+  --surface-container-low: #f0f5ef;
+  --surface-container: #e5e9e4;
+  --surface-container-high: #dee3db;
+  --surface-container-highest: #d8ddd5;
+  --surface-container-lowest: #ffffff;
+
+  --surface-variant: #e1e4df;
+
+  /* Card & Popover mapping to MD3 surfaces */
+  --card: #ffffff;
+  --card-foreground: #181d1a;
+  --popover: #ffffff;
+  --popover-foreground: #181d1a;
+
+  /* Radius Base */
+  --radius: 0.75rem;
+}
+
+.dark {
+  /* Minimal Dark Mode: Maintaining the Oxygenated Feel */
+  --background: #181d1a;
+  --foreground: #f6fbf5;
+  
+  --primary: #5cc68c;
+  --primary-foreground: #003920;
+  --primary-container: #006d42;
+  
+  --secondary: #bbcbbd;
+  --secondary-foreground: #27352a;
+  
+  --muted: #27352a;
+  --muted-foreground: #bbcbbd;
+  
+  --accent: #ffba28;
+  --accent-foreground: #422d00;
+
+  --border: rgba(255, 255, 255, 0.1);
+  
+  --surface-container-low: #1c211e;
+  --surface-container: #202622;
+  --surface-container-high: #2b312d;
+  --surface-container-highest: #363c37;
+  --surface-container-lowest: #0d1210;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer utilities {
+  /* Glassmorphism Rule */
+  .glass {
+    background-color: rgba(225, 228, 223, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  /* Signature Textures */
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-container));
+  }
+
+  /* Ambient Shadows */
+  .ambient-shadow {
+    box-shadow: var(--shadow-ambient);
+  }
+
+  /* Ghost Border */
+  .ghost-border {
+    outline: 1px solid rgba(187, 203, 188, 0.15);
+  }
+
+  /* Aura Progress Bar / Glow */
+  .aura-glow {
+    box-shadow: 0 0 12px 2px rgba(92, 198, 140, 0.4);
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--surface-container-highest);
+    border-radius: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--muted-foreground);
+  }
+}

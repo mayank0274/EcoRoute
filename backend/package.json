@@ -1,0 +1,37 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.15.0",
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/ioredis": "^5.0.0",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.2.0",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@tomtom-org/maps-sdk": "^0.46.13",
+    "@turf/turf": "^7.3.5",
+    "@types/cors": "^2.8.19",
+    "axios": "^1.15.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "ioredis": "^5.9.2",
+    "morgan": "^1.10.1",
+    "winston": "^3.19.0",
+    "zod": "^4.3.6",
+    "zod-to-json-schema": "^3.25.2"
+  }
+}
