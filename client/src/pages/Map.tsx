@@ -1,11 +1,8 @@
 import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, ZoomControl, Polyline, CircleMarker, Tooltip, useMap, GeoJSON } from 'react-leaflet';
 import indiaGeoJson from '@/assets/india-composite.geojson';
-import BottomNav from './layout/BottomNav';
-import SearchBar from './layout/SearchBar';
-import RouteSheet from './layout/RouteSheet';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Menu } from 'lucide-react';
+import SearchBar from '@/components/layout/SearchBar';
+import RouteSheet from '@/components/layout/RouteSheet';
 import { useMapContext } from '@/context/mapContext';
 import 'leaflet/dist/leaflet.css';
 
@@ -42,11 +39,7 @@ const Map: React.FC<MapProps> = ({
   return (
     <div className="relative h-screen w-full overflow-hidden bg-background font-sans">
       <div className="absolute top-0 left-0 right-0 z-[1100] p-4 flex items-start justify-between pointer-events-none gap-4">
-        <div className="flex items-start gap-2.5 pointer-events-auto w-full max-w-[550px]">
-          <button className="flex w-10 h-10 bg-surface-container-lowest rounded-full items-center justify-center text-secondary shadow-2xl border border-border/40 hover:bg-muted transition-all active:scale-95 shrink-0">
-            <Menu size={20} strokeWidth={2.5} />
-          </button>
-
+        <div className="flex items-start gap-2.5 pointer-events-auto w-full max-w-[550px] pl-14">
           <div className="flex-1 min-w-0 flex flex-col">
             <SearchBar />
             {/* Desktop Panel */}
@@ -54,13 +47,6 @@ const Map: React.FC<MapProps> = ({
               <RouteSheet />
             </div>
           </div>
-        </div>
-
-        <div className="hidden md:block pointer-events-auto">
-          <Avatar className="w-10 h-10 shadow-2xl cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all active:scale-95 border-2 border-surface-container-lowest">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback className="bg-primary text-primary-foreground font-bold">JD</AvatarFallback>
-          </Avatar>
         </div>
       </div>
 
@@ -71,10 +57,6 @@ const Map: React.FC<MapProps> = ({
         className="h-full w-full z-0"
         zoomControl={false}
       >
-        {/* <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        /> */}
         <TileLayer
           attribution='&copy; OpenStreetMap &copy; CARTO'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
@@ -154,7 +136,6 @@ const Map: React.FC<MapProps> = ({
 
         <ZoomControl position="bottomright" />
       </MapContainer>
-      <BottomNav />
 
       {/* Mobile Sheet*/}
       <div className="md:hidden">

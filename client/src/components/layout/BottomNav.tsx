@@ -1,31 +1,30 @@
-import React, { useState } from 'react';
-import { Compass, Route, Wind, Settings } from 'lucide-react';
+import { Route, Map } from 'lucide-react';
+import { useLocation, Link } from 'react-router-dom';
 
 const BottomNav: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('explore');
+  const location = useLocation();
+  const activePath = location.pathname;
 
   const navItems = [
-    { id: 'explore', label: 'EXPLORE', icon: Compass },
-    { id: 'routes', label: 'ROUTES', icon: Route },
-    { id: 'health', label: 'HEALTH', icon: Wind },
-    { id: 'settings', label: 'SETTINGS', icon: Settings },
+    { id: 'routes', label: 'ROUTES', icon: Route, route: "/" },
+    { id: 'share-location', label: 'Share/Track Location', icon: Map, route: "/share-location" },
   ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-[1000] md:bottom-6 md:left-1/2 md:-translate-x-1/2 md:w-max">
       <div className="bg-surface-container-lowest md:rounded-2xl md:ambient-shadow md:border md:border-border/50 flex items-center justify-around md:justify-center gap-1.5 md:gap-2 p-2 md:p-1.5 px-4 md:px-2 rounded-t-[2rem] w-full">
         {navItems.map((item) => {
-          const isActive = activeTab === item.id;
+          const isActive = activePath === item.route;
           const Icon = item.icon;
-          
+
           return (
-            <button
+            <Link
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              to={item.route}
               className={`
                 flex flex-col md:flex-row items-center gap-1 md:gap-2.5 px-3 md:px-5 py-2 md:py-2.5 rounded-xl md:rounded-xl transition-all duration-300
-                ${isActive 
-                  ? 'bg-primary text-primary-foreground ambient-shadow scale-[1.02]' 
+                ${isActive
+                  ? 'bg-primary text-primary-foreground ambient-shadow scale-[1.02]'
                   : 'text-secondary hover:bg-muted/50'
                 }
               `}
@@ -42,7 +41,7 @@ const BottomNav: React.FC = () => {
               `}>
                 {item.label}
               </span>
-            </button>
+            </Link>
           );
         })}
       </div>
