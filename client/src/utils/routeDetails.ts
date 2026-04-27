@@ -1,4 +1,4 @@
-import { intervalToDuration } from "date-fns";
+import { intervalToDuration, parseISO } from "date-fns";
 
 const AQI_SCALE = [
     { max: 50, label: 'Excellent', color: '#00B050', textDark: false },
@@ -15,8 +15,13 @@ export function getAqiLevel(aqi: number) {
     })
 }
 
-export function formatDurationSec(seconds: number): string {
-    const d = intervalToDuration({ start: 0, end: seconds * 1000 });
+export function formatDuration(start: string, end: string): string {
+    const d = intervalToDuration({ 
+        start: parseISO(start), 
+        end: parseISO(end) 
+    });
+    
+    if (d.days) return `${d.days}d ${d.hours || 0}h`;
     if (d.hours) return `${d.hours}h ${d.minutes || 0}m`;
     return `${d.minutes || 0} min`;
 }

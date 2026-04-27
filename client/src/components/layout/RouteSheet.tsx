@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, Wind } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isSameDay } from 'date-fns';
 import { useMapContext } from '@/context/mapContext';
-import { getAqiLevel, formatDurationSec, formatDistanceM } from '@/utils/routeDetails';
+import { getAqiLevel, formatDuration, formatDistanceM } from '@/utils/routeDetails';
 import { cn } from '@/lib/utils';
 
 
@@ -40,7 +40,7 @@ const AqiGauge: React.FC<{ aqi: number }> = ({ aqi }) => {
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-3xl font-black text-foreground leading-none">{Math.round(aqi)}</span>
-          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-1">AQI</span>
+          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-1">Avg. AQI</span>
         </div>
       </div>
       <div
@@ -142,7 +142,11 @@ const RouteSheet: React.FC = () => {
     console.log("Starting route with AQI:", activeRoute.summary.avgAqi);
   };
 
-  const arrival = format(parseISO(summary.arrivalTime), 'hh:mm a');
+  const depTime = parseISO(summary.departureTime);
+  const arrTime = parseISO(summary.arrivalTime);
+  const arrival = isSameDay(depTime, arrTime)
+    ? format(arrTime, 'hh:mm a')
+    : format(arrTime, 'EEE, hh:mm a');
 
   const content = (
     <div className="flex flex-col gap-6">
@@ -151,7 +155,7 @@ const RouteSheet: React.FC = () => {
           <RouteTab
             key={i}
             label={labels[i] || `ROUTE ${i + 1}`}
-            duration={formatDurationSec(route.summary.travelTimeInSeconds)}
+            duration={formatDuration(route.summary.departureTime, route.summary.arrivalTime)}
             isSelected={activeRoute === route}
             onClick={() => setSelectedRoute(route)}
           />
@@ -184,7 +188,7 @@ const RouteSheet: React.FC = () => {
 
         <AqiGauge aqi={summary.avgAqi} />
       </div>
-
+      {/* 
       <div className="flex items-center gap-3 px-3 py-3 bg-surface-container/50 rounded-2xl border border-border/20">
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
           <Wind size={20} />
@@ -192,7 +196,7 @@ const RouteSheet: React.FC = () => {
         <p className="text-label-sm font-semibold text-secondary leading-snug">
           This route passes through optimized air zones to reduce exposure to pollutants.
         </p>
-      </div>
+      </div> */}
 
       <button
         onClick={handleStart}
