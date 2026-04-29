@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react"
-import type { MapData, Route, SearchSuggestion } from "../types/map";
+import type { MapData, SearchSuggestion, LeafletRoute } from "../types/map";
 
 interface MapContextType {
     mapData: MapData;
     setSelectedSrc: (src: SearchSuggestion | null) => void;
     setSelectedDestination: (dest: SearchSuggestion | null) => void;
-    setSelectedRoute: (route: Route | null) => void;
-    setFetchedRoutes: (routes: Route[]) => void;
+    setSelectedRoute: (route: LeafletRoute | null) => void;
+    setFetchedRoutes: (routes: LeafletRoute[]) => void;
     setInitialPosition: (pos: [number, number]) => void;
 }
 
@@ -49,11 +49,11 @@ export const MapProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setMapData((prev) => ({ ...prev, selectedDestination: dest }));
     };
 
-    const setSelectedRoute = (route: Route | null) => {
+    const setSelectedRoute = (route: LeafletRoute | null) => {
         setMapData((prev) => ({ ...prev, selectedRoute: route }));
     };
 
-    const setFetchedRoutes = (routes: Route[]) => {
+    const setFetchedRoutes = (routes: LeafletRoute[]) => {
         setMapData((prev) => ({ ...prev, fetchedRoutes: routes }));
     };
 

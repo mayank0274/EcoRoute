@@ -5,8 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import api from '@/http/api';
 import { useDeboucedValue } from '@/hooks/useDeboucedValue';
 import { mapTomTomCategory, categoryIconMap } from '@/utils/placesCategory';
-import type { SearchSuggestion } from '@/types/map';
+import type { LeafletRoute, RoutesApiResponse, SearchSuggestion } from '@/types/map';
 import { useMapContext } from '@/context/mapContext';
+import { formatLngLatGeometry } from '@/utils/routeDetails';
 
 interface IPlaceSearchInput {
   placeholder: string,
@@ -204,16 +205,19 @@ const SearchBar: React.FC = () => {
     queryKey: ["route", mapData.selectedSrc?.id, mapData.selectedDestination?.id],
     queryFn: async () => {
       if (!mapData.selectedSrc || !mapData.selectedDestination) return null;
-      const src = `${mapData.selectedSrc.lat},${mapData.selectedSrc.lng}`;
-      const dest = `${mapData.selectedDestination.lat},${mapData.selectedDestination.lng}`;
-      const res = await api.get(`/places/route?src=${src}&dest=${dest}`);
-      console.log("Route API Response:", res.data);
-      setFetchedRoutes(res.data.data.details);
-      setSelectedRoute(res.data.data.details[0]);
-      return res.data.data.details;
+      const res = await api.get(`/places/route?srcLat=${mapData.selectedSrc.lat}&srcLng=${mapData.selectedSrc.lng}&destLat=${mapData.selectedDestination.lat}&destLng=${mapData.selectedDestination.lng}`);
+      const routes = res.data.data.details as RoutesApiResponse
+
+      const normalizedRoutes: LeafletRoute[] = routes.map(({ summary, geometry }) => {
+        return { summary, geometry: formatLngLatGeometry(geometry) }
+      })
+
+      setFetchedRoutes(normalizedRoutes);
+      setSelectedRoute(normalizedRoutes[0]);
+      return normalizedRoutes;
     },
     enabled: false,
-    staleTime: 1000 * 60 * 5, // Cache route for 5 minutes
+    staleTime: 1000 * 60 * 15,
   });
 
   return (

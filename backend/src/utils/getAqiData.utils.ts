@@ -35,10 +35,10 @@ export const getAqiDataFromWaqi = async (bbox: BBox): Promise<WaqiStation[]> => 
             throw new Error(`WAQI API returned status: ${response.data.status}`);
         }
 
-        logger.info(`AQI data fetched successfully ${JSON.stringify(bbox)}`);
+        logger.info(`WAQI data fetched for ${JSON.stringify(bbox)}`);
         return response.data.data;
     } catch (error) {
-        logger.error(`Error fetching AQI data from WAQI ${JSON.stringify(bbox)}:`, error);
+        logger.error(`WAQI fetch failed for ${JSON.stringify(bbox)}`, error);
         throw error;
     }
 };
@@ -59,15 +59,15 @@ export const getAvgAqi = (
     const aqiValues: number[] = [];
 
     sampledPoints.forEach((point) => {
-        const [lon, lat] = point;
+        const [lng, lat] = point;
 
         let nearestAqi: number | null = null;
         let nearestDist = Infinity;
 
         uniqueStations.forEach((station) => {
             const distKm = turf.distance(
-                [lon, lat],                   // [lon, lat]
-                [station.lon, station.lat],   // [lon, lat]
+                [lng, lat],                   // [lng, lat]
+                [station.lon, station.lat],   // [lng, lat]
                 { units: 'kilometers' }
             );
 

@@ -1,48 +1,34 @@
 import { z } from "zod"
-
-const firstValue = (value: unknown) => (Array.isArray(value) ? value[0] : value);
-
-const parsePosition = (value: unknown) => {
-    if (typeof value !== "string") {
-        return value;
-    }
-
-    const parts = value.split(",").map((part) => part.trim());
-
-    if (parts.length !== 2) {
-        return value;
-    }
-
-    return parts;
-};
+import { LatitudeSchema, LongitudeSchema, LngLatSchema } from "./geospatial.types.ts";
 
 export const placeSearchQuery = z.object({
-    query: z.preprocess(firstValue, z.string().min(1, "Search query is required")),
-    position: z.preprocess(parsePosition, z.tuple([z.coerce.number(), z.coerce.number()]).optional())
+    query: z.string().min(1, "Search query is required"),
+    lat: z.coerce.number().pipe(LatitudeSchema).optional(),
+    lng: z.coerce.number().pipe(LongitudeSchema).optional(),
 })
 
 export const geocodeQuery = z.object({
-    query: z.preprocess(firstValue, z.string().min(1, "Address query is required"))
+    query: z.string().min(1, "Address query is required")
 })
 
 export const reverseGeocodeQuery = z.object({
-    lat: z.coerce.number().min(-90).max(90),
-    lng: z.coerce.number().min(-180).max(180)
+    lat: z.coerce.number().pipe(LatitudeSchema),
+    lng: z.coerce.number().pipe(LongitudeSchema)
 })
 
 export const SearchSuggestionSchema = z.object({
     id: z.string(),
     name: z.string(),
     address: z.string(),
-    lat: z.number(),
-    lng: z.number(),
+    lat: LatitudeSchema,
+    lng: LongitudeSchema,
     type: z.union([z.literal("POI"), z.literal("Street")]),
     category: z.string().optional(),
     score: z.number(),
     routingPosition: z
         .object({
-            lat: z.number(),
-            lng: z.number(),
+            lat: LatitudeSchema,
+            lng: LongitudeSchema,
         })
         .optional(),
 });
@@ -54,8 +40,10 @@ export type SearchSuggestionList = z.infer<typeof SearchSuggestionListSchema>;
 export type SearchSuggestion = z.infer<typeof SearchSuggestionSchema>;
 
 export const routeCalculationQuery = z.object({
-    src: z.preprocess(parsePosition, z.tuple([z.coerce.number().min(-90).max(90), z.coerce.number().min(-180).max(180)])),
-    dest: z.preprocess(parsePosition, z.tuple([z.coerce.number().min(-90).max(90), z.coerce.number().min(-180).max(180)])),
+    srcLat: z.coerce.number().pipe(LatitudeSchema),
+    srcLng: z.coerce.number().pipe(LongitudeSchema),
+    destLat: z.coerce.number().pipe(LatitudeSchema),
+    destLng: z.coerce.number().pipe(LongitudeSchema),
 });
 
 export const SummarySchema = z.object({
@@ -74,19 +62,14 @@ export const SummarySchema = z.object({
     avgAqi: z.number().nullable().optional(),
 });
 
-export const LatLngSchema = z.object({
-    lat: z.number(),
-    lng: z.number()
-});
 
 export const RouteSchema = z.object({
     summary: SummarySchema,
-    geometry: z.array(LatLngSchema)
+    geometry: z.array(LngLatSchema)
 });
 
 export const RoutesResponseSchema = z.array(RouteSchema);
 
 export type Summary = z.infer<typeof SummarySchema>;
-export type LatLng = z.infer<typeof LatLngSchema>;
 export type Route = z.infer<typeof RouteSchema>;
 export type RoutesResponse = z.infer<typeof RoutesResponseSchema>;

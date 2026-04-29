@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { search, geocode, calculateRoute } from '@tomtom-org/maps-sdk/services';
+import { search, geocode } from '@tomtom-org/maps-sdk/services';
 import type { IMapService } from './mapService.interface.ts';
 import type { SearchSuggestionList, SearchSuggestion } from '../types/places.types.ts';
 import { envConfig } from '../envConfig.ts';
 import logger from '../config/logger.ts';
 import { enrichRoutesWithAqi } from './aqi.service.ts';
+import type { LngLat } from '../types/geospatial.types.ts';
 
 
 export function mapToSuggestions(features: any[]): SearchSuggestionList {
@@ -15,7 +16,10 @@ export function mapToSuggestions(features: any[]): SearchSuggestionList {
             (p: any) => p.preferredRouting
         );
 
-        const [lng, lat] = preferredEntry?.position || f.geometry.coordinates;
+        const coordinate = preferredEntry?.position
+            ? [preferredEntry.position[1], preferredEntry.position[0]]
+            : f.geometry.coordinates;
+        const [lng, lat] = coordinate;
 
         return {
             id: f.id,
@@ -34,15 +38,16 @@ export function mapToSuggestions(features: any[]): SearchSuggestionList {
 }
 
 export class TomTomService implements IMapService {
-    async searchPlaces(query: string, position?: [number, number]) {
-        return search({ query, position });
+    async searchPlaces(query: string, position?: LngLat) {
+        const searchPosition = position ? [position[1], position[0]] as [number, number] : undefined;
+        return search({ query, position: searchPosition });
     }
 
     async geocodeAddress(query: string) {
         return geocode({ query });
     }
 
-    async reverseGeocodeCoords(position: [number, number]): Promise<SearchSuggestion | null> {
+    async reverseGeocodeCoords(position: LngLat): Promise<SearchSuggestion | null> {
         const [lng, lat] = position;
         const apiKey = envConfig.TOMTOM_API_KEY;
         const url = `https://api.tomtom.com/search/2/reverseGeocode/${lat},${lng}.json?key=${apiKey}&radius=100`;
@@ -81,8 +86,8 @@ export class TomTomService implements IMapService {
         src,
         dest
     }: {
-        src: [number, number];
-        dest: [number, number];
+        src: LngLat;
+        dest: LngLat;
     }) {
         const [srcLng, srcLat] = src;
         const [destLng, destLat] = dest;
@@ -113,10 +118,7 @@ export class TomTomService implements IMapService {
             const routes = data.routes.map((route: any) => ({
                 summary: route.summary,
                 geometry: route.legs.flatMap((leg: any) =>
-                    leg.points.map((p: any) => ({
-                        lat: p.latitude,
-                        lng: p.longitude
-                    }))
+                    leg.points.map((p: any) => ([p.longitude, p.latitude])) // [[lng,lat]]
                 )
             }));
 

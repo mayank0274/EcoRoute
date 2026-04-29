@@ -14,14 +14,14 @@ const withRetry = async <T>(
         return await fn();
     } catch (error) {
         if (retries <= 0) throw error;
-        logger.warn(`Retrying failed AQI request... (${retries} attempts left)`);
+        logger.warn(`AQI request failed, retrying (${retries} left)`);
         await new Promise(resolve => setTimeout(resolve, delay));
         return withRetry(fn, retries - 1, delay * 1.5);
     }
 };
 
 export const enrichRoutesWithAqi = async (routes: RoutesResponse): Promise<Route[]> => {
-    logger.info(`Enriching ${routes.length} routes with AQI data...`);
+    logger.info(`AQI enrichment started for ${routes.length} routes`);
 
     const enrichedRoutes = await Promise.all(
         routes.map(async (route, index) => {
@@ -29,9 +29,7 @@ export const enrichRoutesWithAqi = async (routes: RoutesResponse): Promise<Route
                 const { geometry, summary } = route;
 
                 // 1. Sample route points
-                // Geometry is [ {lat, lng}, ... ] - sampleRouteForAQI expects [ [lat, lon], ... ]
-                const geometryArray: [number, number][] = geometry.map(p => [p.lat, p.lng]);
-                const sampledPoints = sampleRouteForAQI(geometryArray, summary.lengthInMeters);
+                const sampledPoints = sampleRouteForAQI(geometry, summary.lengthInMeters);
 
                 // 2. Convert samples to bounding boxes
                 const bboxes = convertSampleIntoBoundingBox(sampledPoints);
@@ -51,7 +49,7 @@ export const enrichRoutesWithAqi = async (routes: RoutesResponse): Promise<Route
                 // 5. Calculate average AQI
                 const avgAqi = getAvgAqi(allStations, sampledPoints);
 
-                logger.debug(`Route ${index + 1}: Found ${allStations.length} stations, Avg AQI: ${avgAqi}`);
+                logger.debug(`Route ${index + 1}: ${allStations.length} stations, AQI ${avgAqi}`);
 
                 return {
                     ...route,
@@ -61,7 +59,7 @@ export const enrichRoutesWithAqi = async (routes: RoutesResponse): Promise<Route
                     }
                 };
             } catch (error) {
-                logger.error(`Failed to enrich route ${index + 1} with AQI:`, error);
+                logger.error(`AQI enrichment failed for route ${index + 1}`, error);
                 return {
                     ...route,
                     summary: {
@@ -74,7 +72,7 @@ export const enrichRoutesWithAqi = async (routes: RoutesResponse): Promise<Route
     );
 
     const successfulAqi = enrichedRoutes.filter(r => r.summary.avgAqi !== null).length;
-    logger.info(`Enrichment complete. ${successfulAqi}/${routes.length} routes enriched successfully.`);
+    logger.info(`AQI enrichment done: ${successfulAqi}/${routes.length} routes`);
 
     return enrichedRoutes;
 };

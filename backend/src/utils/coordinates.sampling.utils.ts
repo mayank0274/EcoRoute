@@ -11,12 +11,11 @@ const SAMPLING_CONFIG = {
 const BOUNDING_BOX_COUNT = 3;
 
 export const sampleRouteForAQI = (
-    geometry: [number, number][],   // External [lat, lon] pairs from TomTom
+    geometry: LngLat[],
     lengthInMeters: number
 ): LngLat[] => {
 
-    // Internal format: [lon, lat]
-    const line = turf.lineString(geometry.map(([lat, lon]) => [lon, lat]));
+    const line = turf.lineString(geometry);
     const totalKm = lengthInMeters / 1000;
 
     let targetPoints: number;
@@ -47,11 +46,11 @@ export const sampleRouteForAQI = (
     for (let i = 0; i < targetPoints; i++) {
         const distKm = Math.min(i * intervalKm, totalKm); // clamp last point to route end
         const pt = turf.along(line, distKm, { units: 'kilometers' });
-        const [lon, lat] = pt.geometry.coordinates;
-        sampled.push([lon, lat]); // Keep as [lon, lat] internal format
+        const [lng, lat] = pt.geometry.coordinates;
+        sampled.push([lng, lat]); // Keep as [lng, lat] internal format
     }
 
-    return sampled; // [lon, lat]
+    return sampled; // [lng, lat]
 };
 
 export const convertSampleIntoBoundingBox = (sampled: LngLat[]): BBox[] => {

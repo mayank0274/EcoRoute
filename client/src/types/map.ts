@@ -17,8 +17,8 @@ export interface MapData {
   initialPosition: [number, number];
   selectedSrc: SearchSuggestion | null;
   selectedDestination: SearchSuggestion | null;
-  selectedRoute: Route | null;
-  fetchedRoutes: Route[];
+  selectedRoute: LeafletRoute | null;
+  fetchedRoutes: LeafletRoute[];
 }
 
 export type Summary = {
@@ -37,14 +37,20 @@ export type Summary = {
   avgAqi: number;
 };
 
-export type LatLng = {
-  lat: number;
-  lng: number;
-};
+export type LngLat = [number, number]
+export type LatLngObj = {
+  lat: number,
+  lng: number
+}
+
 
 export type Route = {
   summary: Summary;
-  geometry: LatLng[];
+  geometry: LngLat[];
 };
 
-export type RoutesResponse = Route[];
+export type RoutesApiResponse = Route[];
+
+export type LeafletRoute = Omit<Route, "geometry"> & {
+  geometry: LatLngObj[];
+};

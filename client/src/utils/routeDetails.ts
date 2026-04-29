@@ -1,3 +1,4 @@
+import type { LatLngObj, LngLat } from "@/types/map";
 import { intervalToDuration, parseISO } from "date-fns";
 
 const AQI_SCALE = [
@@ -16,11 +17,11 @@ export function getAqiLevel(aqi: number) {
 }
 
 export function formatDuration(start: string, end: string): string {
-    const d = intervalToDuration({ 
-        start: parseISO(start), 
-        end: parseISO(end) 
+    const d = intervalToDuration({
+        start: parseISO(start),
+        end: parseISO(end)
     });
-    
+
     if (d.days) return `${d.days}d ${d.hours || 0}h`;
     if (d.hours) return `${d.hours}h ${d.minutes || 0}m`;
     return `${d.minutes || 0} min`;
@@ -29,3 +30,7 @@ export function formatDuration(start: string, end: string): string {
 export function formatDistanceM(meters: number): string {
     return (meters / 1000).toFixed(1);
 }
+
+export const formatLngLatGeometry = (geometry: LngLat[]): LatLngObj[] => {
+    return geometry.map(([lng, lat]) => ({ lat, lng }));
+};
