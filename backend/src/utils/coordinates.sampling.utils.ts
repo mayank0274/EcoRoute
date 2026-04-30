@@ -66,3 +66,22 @@ export const convertSampleIntoBoundingBox = (sampled: LngLat[]): BBox[] => {
 
     return bboxes;
 };
+
+
+// Tolerance for simlify large geometry ararays
+export function getTolerance(distanceMeters: number) {
+    // Skip small routes → not worth simplifying
+    if (distanceMeters < 10000) return 0;
+
+    const errorRatio = 0.001; // allow 0.1% deviation from total length
+
+    // allowed error in meters (e.g. 100km route → 100m deviation allowed)
+    const allowedErrorMeters = distanceMeters * errorRatio;
+
+    // Convert meters → degrees because Turf expects coordinates in degrees
+    // 1 degree latitude ≈ 111,000 meters
+    const tolerance = allowedErrorMeters / 111000;
+
+    // Limit max deviation (~100m) so long routes don't get distorted
+    return Math.min(tolerance, 0.001);
+}

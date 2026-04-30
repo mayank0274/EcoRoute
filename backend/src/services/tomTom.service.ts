@@ -6,6 +6,8 @@ import { envConfig } from '../envConfig.ts';
 import logger from '../config/logger.ts';
 import { enrichRoutesWithAqi } from './aqi.service.ts';
 import type { LngLat } from '../types/geospatial.types.ts';
+import * as turf from '@turf/turf';
+import { getTolerance } from '../utils/coordinates.sampling.utils.ts';
 
 
 export function mapToSuggestions(features: any[]): SearchSuggestionList {
@@ -123,7 +125,17 @@ export class TomTomService implements IMapService {
             }));
 
             const enrichedRoutes = await enrichRoutesWithAqi(routes);
-            return enrichedRoutes;
+
+            return enrichedRoutes.map(({ summary, geometry }) => {
+                const line = turf.lineString(geometry);
+                const simplified = turf.simplify(line, {
+                    tolerance: getTolerance(summary.lengthInMeters),
+                });
+                return {
+                    summary,
+                    geometry: simplified.geometry.coordinates
+                }
+            });
         } catch (error: any) {
             logger.error("Routing API error:", error);
             throw error;
