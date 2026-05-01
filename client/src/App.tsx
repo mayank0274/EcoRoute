@@ -3,12 +3,14 @@ import Map from './pages/Map'
 import BottomNav from './components/layout/BottomNav'
 import GlobalSidebar from './components/layout/GlobalSidebar'
 import ShareLocation from './pages/ShareLocation'
+import { Toaster } from 'sonner'
 
 function App() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
       <main className="h-screen w-full relative">
         <BrowserRouter>
+          <Toaster richColors position="top-right" />
           <GlobalSidebar />
           <Routes>
             <Route path="/" element={<Map />} />

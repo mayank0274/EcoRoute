@@ -98,6 +98,10 @@ export class ApiError<TDetails = unknown> extends Error {
     return new ApiError(409, message);
   }
 
+  static tooManyRequests<T = unknown>(message = "TOO_MANY_REQUESTS", details?: T) {
+    return new ApiError(429, message, details);
+  }
+
   static internal(message = "INTERNAL_SERVER_ERROR") {
     return new ApiError(500, message);
   }

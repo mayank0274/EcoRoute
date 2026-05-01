@@ -8,6 +8,7 @@ import { mapTomTomCategory, categoryIconMap } from '@/utils/placesCategory';
 import type { LeafletRoute, RoutesApiResponse, SearchSuggestion } from '@/types/map';
 import { useMapContext } from '@/context/mapContext';
 import { formatLngLatGeometry } from '@/utils/routeDetails';
+import { toast } from 'sonner';
 
 interface IPlaceSearchInput {
   placeholder: string,
@@ -90,14 +91,14 @@ const PlaceSearchInput = ({ placeholder, icon, updateRouteData, value }: IPlaceS
             handleSelect(data);
             userCoordsRef.current = null; // Clean up
           }
-        }, (err) => {
-          alert("Location access denied or not supported.");
+        }, () => {
+          toast.error("Location access denied or not supported.");
         });
       } else {
         throw new Error("Geolocation is not supported by your browser.");
       }
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -154,7 +155,6 @@ const PlaceSearchInput = ({ placeholder, icon, updateRouteData, value }: IPlaceS
               <div className="flex flex-col items-center justify-center p-6 text-destructive text-center">
                 <XCircle className="mb-2 opacity-50" size={24} />
                 <p className="text-label-md font-semibold">Error loading results</p>
-                <p className="text-label-sm opacity-70">{(error as any)?.message || "Please try again later"}</p>
               </div>
             ) : placesData.length === 0 ? (
               <div className="flex flex-col items-center justify-center p-8 text-muted-foreground text-center">

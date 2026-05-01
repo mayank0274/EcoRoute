@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
-import { randomUUID } from "crypto";
 import logger from "../config/logger.ts";
 import redis from "../db/redis.ts";
+import { ApiError } from "../utils/apiResponse.utils.ts";
 
 const GLOBAL_CAP = 400;
 const USER_CAP = 7;
@@ -15,9 +15,7 @@ export const rateLimiterMiddleware = async (
         let userId = req.ip;
 
         if (!userId) {
-            return res.status(429).json({
-                error: "Global limit exceeded"
-            });
+            return next(ApiError.tooManyRequests("Global requests limit exceeded"));
         }
 
         const date = new Date().toISOString().slice(0, 10);
@@ -57,18 +55,25 @@ export const rateLimiterMiddleware = async (
                 })}`
             );
 
-            return res.status(429).json({
-                error:
+            return next(
+                ApiError.tooManyRequests(
                     reason === "global"
-                        ? "Global limit exceeded"
-                        : "User limit exceeded",
-            });
+                        ? "Global requests limit exceeded"
+                        : "User requests limit exceeded",
+                    {
+                        reason,
+                        retryAfter,
+                        globalRemaining: Math.max(0, globalRem),
+                        userRemaining: Math.max(0, userRem),
+                    }
+                )
+            );
         }
 
         next();
     } catch (err) {
         logger.error("Rate limiter error", err);
-        next();
+        next(err);
     }
 };
 

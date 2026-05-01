@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react"
 import type { MapData, SearchSuggestion, LeafletRoute } from "../types/map";
+import { toast } from "sonner";
 
 interface MapContextType {
     mapData: MapData;
@@ -28,8 +29,8 @@ export const MapProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             if (window.navigator) {
                 window.navigator.geolocation.getCurrentPosition(async (pos) => {
                     setInitialPosition([pos.coords.latitude, pos.coords.longitude]);
-                }, (err) => {
-                    alert("Location access denied or not supported.");
+                }, () => {
+                    toast.error("Location access denied or not supported.");
                 });
             } else {
                 setInitialPosition(INITIAL_POSITION);
@@ -37,7 +38,7 @@ export const MapProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             }
         } catch (error: any) {
             setInitialPosition(INITIAL_POSITION);
-            alert(error.message);
+            toast.error(error.message);
         }
     }, []);
 
