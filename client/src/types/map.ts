@@ -35,6 +35,9 @@ export type Summary = {
   historicTrafficTravelTimeInSeconds: number; // ⏱ based on historical traffic (seconds)
   liveTrafficIncidentsTravelTimeInSeconds: number; // ⏱ current incidents impact (seconds)
   avgAqi: number;
+  exposureScore?: number | null;
+  aqiReliability?: "high" | "medium" | "low" | "invalid";
+  aqiCoveredRatio?: number;
 };
 
 export type LngLat = [number, number]

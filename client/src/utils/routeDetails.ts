@@ -1,5 +1,6 @@
 import type { LatLngObj, LngLat } from "@/types/map";
-import { intervalToDuration, parseISO } from "date-fns";
+import { intervalToDuration, parseISO, addSeconds, isSameDay, format } from "date-fns";
+
 
 const AQI_SCALE = [
     { max: 50, label: 'Excellent', color: '#00B050', textDark: false },
@@ -25,6 +26,15 @@ export function formatDuration(start: string, end: string): string {
     if (d.days) return `${d.days}d ${d.hours || 0}h`;
     if (d.hours) return `${d.hours}h ${d.minutes || 0}m`;
     return `${d.minutes || 0} min`;
+}
+
+export function getEstimatedArrival(travelTimeInSeconds: number): string {
+    const depTime = new Date();
+    const arrTime = addSeconds(depTime, travelTimeInSeconds);
+
+    return isSameDay(depTime, arrTime)
+        ? format(arrTime, 'hh:mm a')
+        : format(arrTime, 'EEE, hh:mm a');
 }
 
 export function formatDistanceM(meters: number): string {

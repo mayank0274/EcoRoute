@@ -117,12 +117,21 @@ export class TomTomService implements IMapService {
                 return [];
             }
 
-            const routes = data.routes.map((route: any) => ({
-                summary: route.summary,
-                geometry: route.legs.flatMap((leg: any) =>
-                    leg.points.map((p: any) => ([p.longitude, p.latitude])) // [[lng,lat]]
-                )
-            }));
+            const routes = data.routes.map((route: any) => {
+                const geometry: [number, number][] = [];
+
+                for (const leg of route.legs) {
+                    if (!Array.isArray(leg.points)) continue;
+                    for (const p of leg.points) {
+                        geometry.push([p.longitude, p.latitude]);
+                    }
+                }
+
+                return {
+                    summary: route.summary,
+                    geometry
+                };
+            });
 
             const enrichedRoutes = await enrichRoutesWithAqi(routes);
 
@@ -136,6 +145,7 @@ export class TomTomService implements IMapService {
                     geometry: simplified.geometry.coordinates
                 }
             });
+
         } catch (error: any) {
             logger.error("Routing API error:", error);
             throw error;

@@ -1,10 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Wind } from 'lucide-react';
-import { format, parseISO, isSameDay } from 'date-fns';
+import { ChevronDown } from 'lucide-react';
 import { useMapContext } from '@/context/mapContext';
-import { getAqiLevel, formatDuration, formatDistanceM } from '@/utils/routeDetails';
+import { getAqiLevel, formatDuration, formatDistanceM, getEstimatedArrival } from '@/utils/routeDetails';
 import { cn } from '@/lib/utils';
 
+
+const RELIABILITY_STYLES = {
+  high: {
+    className: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+    label: 'HIGH',
+  },
+  medium: {
+    className: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+    label: 'MEDIUM',
+  },
+  low: {
+    className: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+    label: 'LOW',
+  },
+  invalid: {
+    className: 'bg-muted/40 text-muted-foreground border-border/40',
+    label: 'INVALID',
+  },
+} as const;
 
 const AqiGauge: React.FC<{ aqi: number }> = ({ aqi }) => {
   const level = getAqiLevel(aqi);
@@ -40,7 +58,7 @@ const AqiGauge: React.FC<{ aqi: number }> = ({ aqi }) => {
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-3xl font-black text-foreground leading-none">{Math.round(aqi)}</span>
-          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-1">Avg. AQI</span>
+          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-1">Avg. AQI*</span>
         </div>
       </div>
       <div
@@ -134,6 +152,14 @@ const RouteSheet: React.FC = () => {
   // Use the first one as selected if none is selected
   const activeRoute = selectedRoute || fetchedRoutes[0];
   const { summary } = activeRoute;
+  const exposureScore = summary.exposureScore ?? summary.avgAqi;
+  const aqiReliability = summary.aqiReliability ?? 'invalid';
+  const coveredRatioPercent =
+    typeof summary.aqiCoveredRatio === 'number'
+      ? Math.round(summary.aqiCoveredRatio * 100)
+      : null;
+  const reliabilityStyle =
+    RELIABILITY_STYLES[aqiReliability] ?? RELIABILITY_STYLES.invalid;
 
   const handleStart = () => {
     if (!selectedRoute) {
@@ -142,11 +168,7 @@ const RouteSheet: React.FC = () => {
     console.log("Starting route with AQI:", activeRoute.summary.avgAqi);
   };
 
-  const depTime = parseISO(summary.departureTime);
-  const arrTime = parseISO(summary.arrivalTime);
-  const arrival = isSameDay(depTime, arrTime)
-    ? format(arrTime, 'hh:mm a')
-    : format(arrTime, 'EEE, hh:mm a');
+
 
   const content = (
     <div className="flex flex-col gap-6">
@@ -169,7 +191,7 @@ const RouteSheet: React.FC = () => {
               Estimated Arrival
             </span>
             <span className="text-3xl font-black text-foreground lowercase">
-              {arrival}
+              {getEstimatedArrival(summary.travelTimeInSeconds)}
             </span>
           </div>
 
@@ -186,33 +208,45 @@ const RouteSheet: React.FC = () => {
           </div>
         </div>
 
-        <AqiGauge aqi={summary.avgAqi} />
-      </div>
-      {/* 
-      <div className="flex items-center gap-3 px-3 py-3 bg-surface-container/50 rounded-2xl border border-border/20">
-        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-          <Wind size={20} />
-        </div>
-        <p className="text-label-sm font-semibold text-secondary leading-snug">
-          This route passes through optimized air zones to reduce exposure to pollutants.
-        </p>
-      </div> */}
+        <div className="flex flex-col items-center gap-3">
+          <AqiGauge aqi={summary.avgAqi} />
 
-      <button
-        onClick={handleStart}
-        className="
-          w-full py-4 rounded-[1.25rem] bg-primary text-white font-black text-label-md
-          flex items-center justify-center gap-2.5 shadow-lg shadow-primary/30
-          hover:bg-primary/95 hover:scale-[1.01] active:scale-[0.98] transition-all
-        "
-      >
-        Start Safe Route
-      </button>
+          <div className="flex flex-col items-center gap-1">
+            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">
+              Reliability score
+            </div>
+            <div
+              className={cn(
+                'px-2.5 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest',
+                reliabilityStyle.className,
+              )}
+              title={
+                coveredRatioPercent !== null
+                  ? `Coverage: ${coveredRatioPercent}%`
+                  : 'Coverage unavailable'
+              }
+            >
+              {reliabilityStyle.label}
+              {coveredRatioPercent !== null ? ` · ${coveredRatioPercent}%` : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-3 px-3 py-3 bg-surface-container/50 rounded-2xl border border-border/20">
+        <p className="text-label-sm text-xs font-semibold text-secondary leading-snug">
+          <ul className='list-disc'>
+            <li>Represent avg. exposure throughout the route.</li>
+            <li>Low reliability means the result is based on limited AQI data or sparse station coverage.</li>
+            <li>AQI calcutaions of routes &gt;250 are currently skipped.</li>
+          </ul>
+        </p>
+      </div>
     </div>
   );
 
   return (
-    <>
+    <> 
       {/* mobile  */}
       <div
         className={`

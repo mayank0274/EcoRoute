@@ -212,13 +212,19 @@ const SearchBar: React.FC = () => {
         return { summary, geometry: formatLngLatGeometry(geometry) }
       })
 
-      setFetchedRoutes(normalizedRoutes);
-      setSelectedRoute(normalizedRoutes[0]);
       return normalizedRoutes;
     },
     enabled: false,
     staleTime: 1000 * 60 * 15,
+    retry: false
   });
+
+  useEffect(() => {
+    if (routeData) {
+      setFetchedRoutes(routeData);
+      setSelectedRoute(routeData[0]);
+    }
+  }, [routeData])
 
   return (
     <div className="flex bg-surface-container-lowest rounded-[1.5rem] shadow-ambient border border-border/40 overflow-visible w-full max-w-[480px]">

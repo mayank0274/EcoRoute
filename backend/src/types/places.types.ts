@@ -60,6 +60,9 @@ export const SummarySchema = z.object({
     historicTrafficTravelTimeInSeconds: z.number(), // ⏱ based on historical traffic (seconds)
     liveTrafficIncidentsTravelTimeInSeconds: z.number(), // ⏱ current incidents impact (seconds),
     avgAqi: z.number().nullable().optional(),
+    exposureScore: z.number().nullable().optional(),
+    aqiReliability: z.enum(["high", "medium", "low", "invalid"]).optional(),
+    aqiCoveredRatio: z.number().min(0).max(1).optional(),
 });
 
 
