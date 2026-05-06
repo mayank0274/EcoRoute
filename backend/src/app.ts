@@ -6,6 +6,7 @@ import { initializeTomTom } from "./config/tomTomMapConfig.ts";
 import placesRouter from "./routes/places.routes.ts";
 import cors from "cors"
 import compression from "compression"
+import { envConfig } from "./envConfig.ts";
 
 initializeTomTom();
 
@@ -13,7 +14,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-app.use(cors())
+app.use(cors({
+    origin : envConfig.CORS_ORIGIN.split(",")
+}))
 app.use(compression())
 
 app.get("/hello", asyncErrorHandler(async (req, res, next) => {

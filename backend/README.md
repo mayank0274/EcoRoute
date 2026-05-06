@@ -23,6 +23,7 @@ You need keys from these services:
    - `TOMTOM_API_KEY`
    - `WAQI_TOKEN`
    - `NODE_ENV`
+   - `CORS_ORIGIN`
 
 3. Run:
    ```bash

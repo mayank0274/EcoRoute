@@ -8,15 +8,9 @@ const envSchema = z.object({
     NODE_ENV: z.enum(["dev", "prod"]),
     REDIS_HOST: z.string(),
     REDIS_PORT: z.string().transform(Number),
-    // PG_HOST: z.string(),
-    // PG_PORT: z.string().transform(Number),
-    // PG_USER: z.string(),
-    // PG_PASSWORD: z.string(),
-    // PG_DB_NAME: z.string(),
-    // ACCESS_TOKEN_SECRET: z.string(),
-    // REFRESH_TOKEN_SECRET: z.string().optional(),
     TOMTOM_API_KEY: z.string(),
-    WAQI_TOKEN: z.string()
+    WAQI_TOKEN: z.string(),
+    CORS_ORIGIN:z.string()
 });
 
 const selectedEnv = {
@@ -24,15 +18,9 @@ const selectedEnv = {
     NODE_ENV: process.env.NODE_ENV,
     REDIS_HOST: process.env.REDIS_HOST,
     REDIS_PORT: process.env.REDIS_PORT,
-    // PG_HOST: process.env.PG_HOST,
-    // PG_PORT: process.env.PG_PORT,
-    // PG_USER: process.env.PG_USER,
-    // PG_PASSWORD: process.env.PG_PASSWORD,
-    // PG_DB_NAME: process.env.PG_DB_NAME,
-    // ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
-    // REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
     TOMTOM_API_KEY: process.env.TOMTOM_API_KEY,
-    WAQI_TOKEN: process.env.WAQI_TOKEN
+    WAQI_TOKEN: process.env.WAQI_TOKEN,
+    CORS_ORIGIN:process.env.CORS_ORIGIN
 };
 
 const env = envSchema.safeParse(selectedEnv);
