@@ -5,13 +5,17 @@
   "main": "server.ts",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.ts"
+    "dev": "nodemon src/server.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.15.0",
   "devDependencies": {
+    "@types/compression": "^1.8.1",
     "@types/express": "^5.0.6",
     "@types/ioredis": "^5.0.0",
     "@types/morgan": "^1.9.10",
