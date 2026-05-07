@@ -20,7 +20,7 @@ You need keys from these services:
 See [Client](./client/README.md) and [Backend](./backend/README.md) for detailed instructions.
 
 1. Install dependencies in both folders.
-2. Configure `.env` files.
+2. Configure `.env.local` for development and `.env.prod` for production in the backend.
 3. Run `pnpm dev` in both folders.
 
 

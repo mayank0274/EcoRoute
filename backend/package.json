@@ -5,10 +5,10 @@
   "main": "server.ts",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.ts",
+    "dev": "cross-env NODE_ENV=dev nodemon src/server.ts",
     "typecheck": "tsc -p tsconfig.json",
     "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/server.js"
+    "start": "cross-env NODE_ENV=prod node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +20,7 @@
     "@types/ioredis": "^5.0.0",
     "@types/morgan": "^1.9.10",
     "@types/node": "^25.2.0",
+    "cross-env": "^10.1.0",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"

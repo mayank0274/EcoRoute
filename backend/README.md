@@ -16,7 +16,11 @@ You need keys from these services:
    ```
 
 2. Environment Variables:
-   Copy `.env.example` to `.env` and fill:
+   Create the environment file for the mode you want to run:
+   - `.env.local` for development (`NODE_ENV=dev`)
+   - `.env.prod` for production (`NODE_ENV=prod`)
+
+   Both files should include:
    - `PORT`
    - `REDIS_HOST`
    - `REDIS_PORT`
@@ -24,6 +28,10 @@ You need keys from these services:
    - `WAQI_TOKEN`
    - `NODE_ENV`
    - `CORS_ORIGIN`
+
+   When running in production, also set:
+   - `UPSTASH_REDIS_USERNAME`
+   - `UPSTASH_REDIS_PASSWORD`
 
 3. Run:
    ```bash

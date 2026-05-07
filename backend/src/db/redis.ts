@@ -2,16 +2,25 @@ import { Redis } from 'ioredis';
 import logger from '../config/logger.ts';
 import { envConfig } from '../envConfig.ts';
 
+const isProd = envConfig.NODE_ENV === "prod";
 
 const redis = new Redis({
-    host: envConfig.REDIS_HOST || 'localhost',
-    port: Number(envConfig.REDIS_PORT) || 6379,
-    retryStrategy: (times) => {
-        if (times > 10) return null;
-        return Math.min(times * 100, 3000);
-    },
-    maxRetriesPerRequest: 3,
-    enableOfflineQueue: true,
+  host: envConfig.REDIS_HOST || "localhost",
+  port: Number(envConfig.REDIS_PORT) || 6379,
+
+  ...(isProd && {
+    username: envConfig.UPSTASH_REDIS_USERNAME || "default",
+    password: envConfig.UPSTASH_REDIS_PASSWORD,
+    tls: {},
+  }),
+
+  retryStrategy: (times) => {
+    if (times > 10) return null;
+    return Math.min(times * 100, 3000);
+  },
+
+  maxRetriesPerRequest: 3,
+  enableOfflineQueue: true,
 });
 
 redis.on('error', (err) => {
