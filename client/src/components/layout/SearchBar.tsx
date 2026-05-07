@@ -28,7 +28,6 @@ const PlaceSearchInput = ({ placeholder, icon, updateRouteData, value }: IPlaceS
     data: placesData = [],
     isFetching: isSearching,
     isError,
-    error,
   } = useQuery<SearchSuggestion[]>({
     queryKey: ["places-search", debouncedQuery],
     queryFn: async ({ queryKey }) => {

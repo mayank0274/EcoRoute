@@ -25,7 +25,7 @@ const RELIABILITY_STYLES = {
 } as const;
 
 const AqiGauge: React.FC<{ aqi: number }> = ({ aqi }) => {
-  const level = getAqiLevel(aqi);
+  const level = getAqiLevel(aqi)!;
   const strokeDasharray = 251.2;
   const percentage = Math.min(aqi / 300, 1);
   const strokeDashoffset = strokeDasharray * (1 - percentage);
@@ -152,7 +152,6 @@ const RouteSheet: React.FC = () => {
   // Use the first one as selected if none is selected
   const activeRoute = selectedRoute || fetchedRoutes[0];
   const { summary } = activeRoute;
-  const exposureScore = summary.exposureScore ?? summary.avgAqi;
   const aqiReliability = summary.aqiReliability ?? 'invalid';
   const coveredRatioPercent =
     typeof summary.aqiCoveredRatio === 'number'
@@ -161,12 +160,6 @@ const RouteSheet: React.FC = () => {
   const reliabilityStyle =
     RELIABILITY_STYLES[aqiReliability] ?? RELIABILITY_STYLES.invalid;
 
-  const handleStart = () => {
-    if (!selectedRoute) {
-      setSelectedRoute(activeRoute);
-    }
-    console.log("Starting route with AQI:", activeRoute.summary.avgAqi);
-  };
 
 
 
