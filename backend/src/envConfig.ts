@@ -18,7 +18,8 @@ const envSchema = z.object({
     WAQI_TOKEN: z.string(),
     CORS_ORIGIN:z.string(),
     UPSTASH_REDIS_USERNAME:z.string().optional(),
-    UPSTASH_REDIS_PASSWORD:z.string().optional()
+    UPSTASH_REDIS_PASSWORD:z.string().optional(),
+    CLIENT_URL:z.string().optional()
 });
 
 const selectedEnv = {
@@ -30,7 +31,8 @@ const selectedEnv = {
     WAQI_TOKEN: process.env.WAQI_TOKEN,
     CORS_ORIGIN:process.env.CORS_ORIGIN,
     UPSTASH_REDIS_PASSWORD:process.env.UPSTASH_REDIS_PASSWORD,
-    UPSTASH_REDIS_USERNAME:process.env.UPSTASH_REDIS_USERNAME
+    UPSTASH_REDIS_USERNAME:process.env.UPSTASH_REDIS_USERNAME,
+    CLIENT_URL:process.env.CLIENT_URL
 };
 
 const env = envSchema.safeParse(selectedEnv);

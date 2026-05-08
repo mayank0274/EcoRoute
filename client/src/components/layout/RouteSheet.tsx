@@ -229,9 +229,9 @@ const RouteSheet: React.FC = () => {
       <div className="flex items-center gap-3 px-3 py-3 bg-surface-container/50 rounded-2xl border border-border/20">
         <p className="text-label-sm text-xs font-semibold text-secondary leading-snug">
           <ul className='list-disc'>
-            <li>Represent avg. exposure throughout the route.</li>
+            <li>*Represent avg. exposure throughout the route.</li>
             <li>Low reliability means the result is based on limited AQI data or sparse station coverage.</li>
-            <li>AQI calcutaions of routes &gt;250 are currently skipped.</li>
+            <li>AQI calcutaions of routes &gt;250km are currently skipped.</li>
           </ul>
         </p>
       </div>

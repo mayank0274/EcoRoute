@@ -19,8 +19,12 @@ app.use(cors({
 }))
 app.use(compression())
 
-app.get("/hello", asyncErrorHandler(async (req, res, next) => {
-    res.send("hello world");
+app.get("/", asyncErrorHandler(async (req, res, next) => {
+    if(envConfig.CLIENT_URL){
+        res.redirect(envConfig.CLIENT_URL);
+    }else{
+        res.send("hello world");
+    }
 }));
 
 app.use("/api/places", placesRouter);
