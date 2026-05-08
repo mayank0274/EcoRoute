@@ -86,9 +86,9 @@ const Map: React.FC<MapProps> = ({
                 key={index}
                 positions={route.geometry}
                 pathOptions={{
-                  color: isSelected ? "#006d42" : '#e53935',
+                  color:  "#006d42",
                   weight: isSelected ? 6 : 4,
-                  opacity: (isSelected ? 1 : 0.6),
+                  opacity: (isSelected ? 1 : 0.4),
                   lineJoin: 'round',
                   lineCap: 'round',
                 }}
